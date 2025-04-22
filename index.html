@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><!accept all type of characters>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!for mobile friendly>
+    <title>Chat </title><!show title at top> 
+    <style><!css style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fafafa;
+        }
+        #messages li {
+            padding: 5px;
+            margin-bottom: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        #messageInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Chat </h1>
+        <ul id="messages"></ul>
+        <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off">
+        <button onclick="sendMessage()">Send</button>
+<button onclick="clearChat()" style="margin-top: 10px; background-color: #dc3545;">Clear Chat</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+
+function clearChat() {
+    document.getElementById('messages').innerHTML = '';
+}
+        // Connect to Socket.io server
+        var socket = io();
+
+        // Listen for incoming messages and display them
+        socket.on('message', function(msg) {
+            var li = document.createElement('li');
+            li.textContent = msg;
+            document.getElementById('messages').appendChild(li);
+            // Scroll to the bottom to see the latest message
+            var messages = document.getElementById('messages');
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // Prompt for the username when the page loads
+const username = prompt("Enter your name:");
+
+// Send message with username included
+function sendMessage() {
+    var input = document.getElementById('messageInput');
+    var message = input.value;
+    if (message.trim()) {
+        // Combine username with message
+        socket.send(`${username}: ${message}`);
+        input.value = '';
+    }
+}
+
+
+        // Optionally: Send message when pressing "Enter"
+        document.getElementById('messageInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
